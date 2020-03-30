@@ -62,7 +62,7 @@ public class Main {
     }
 
 
-    private static Document httpGetAndParseHtml(String link) {
+    private static Document httpGetAndParseHtml(String link) throws IOException {
         CloseableHttpClient httpclient = HttpClients.createDefault();
 
         System.out.println(link);
@@ -80,7 +80,7 @@ public class Main {
             String html = EntityUtils.toString(entity1);
 
             return Jsoup.parse(html);
-            ;
+
         }
     }
 
