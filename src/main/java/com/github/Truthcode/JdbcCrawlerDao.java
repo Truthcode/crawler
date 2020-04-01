@@ -66,6 +66,16 @@ public class JdbcCrawlerDao implements CrawlerDao {
         }
         return false;
     }
+
+    @Override
+    public void insertProcessedLind(String link) {
+
+    }
+
+    @Override
+    public void insertLinkToBeProcessed(String href) {
+
+    }
 }
 
 
