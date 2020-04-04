@@ -15,36 +15,38 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.stream.Collectors;
 
-public class Crawler {
-    private CrawlerDao dao = new MyBatisCrawlerDao();
-
-    public void run() throws SQLException, IOException {
-        String link;
-        //从数据库中加载下一个连接，能够加载就进行循环
-        while ((link = dao.getNextLinkThenDelete()) != null) {
-            //询问数据库，当前链接是否已经被处理过？
-            //若连接已经被处理即跳过
-            if (dao.isLinkProcessed(link)) {
-                continue;
-            }
-
-            //若连接是news有关的新闻页面就进入
-            if (isInterstingLink(link)) {
-                Document doc = httpGetAndParseHtml(link);
-
-                parseUrlsFromPageAndStoreIntoDatabase(doc);
-
-                storeIntoDatabaseIfItIsNewsPage(doc, link);
-
-                dao.insertProcessedLind(link);
-                //dao.updateDatabase(link, "INSERT into LINKS_ALREADY_PROCESSED (LINK) values (?)");
-            }
-        }
+public class Crawler extends Thread {
+    private CrawlerDao dao;
+    public Crawler(CrawlerDao dao) {
+        this.dao = dao;
     }
 
-    public static void main(String[] args) throws IOException, SQLException {
-        new Crawler().run();
+    public void run() {
+        String link;
+        //从数据库中加载下一个连接，能够加载就进行循环
+        try {
+            while ((link = dao.getNextLinkThenDelete()) != null) {
+                //询问数据库，当前链接是否已经被处理过？
+                //若连接已经被处理即跳过
+                if (dao.isLinkProcessed(link)) {
+                    continue;
+                }
 
+                //若连接是news有关的新闻页面就进入
+                if (isInterstingLink(link)) {
+                    Document doc = httpGetAndParseHtml(link);
+
+                    parseUrlsFromPageAndStoreIntoDatabase(doc);
+
+                    storeIntoDatabaseIfItIsNewsPage(doc, link);
+
+                    dao.insertProcessedLind(link);
+                    //dao.updateDatabase(link, "INSERT into LINKS_ALREADY_PROCESSED (LINK) values (?)");
+                }
+            }
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void parseUrlsFromPageAndStoreIntoDatabase(Document doc) throws SQLException {
@@ -55,7 +57,6 @@ public class Crawler {
                 continue;
             }
             dao.insertLinkToBeProcessed(href);
-//            dao.updateDatabase(href, "INSERT into LINKS_TO_BE_PROCESSED (LINK) values (?)");
         }
     }
 
