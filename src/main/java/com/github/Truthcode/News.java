@@ -1,12 +1,16 @@
 package com.github.Truthcode;
 
+import java.time.Instant;
+
 public class News {
     private Integer id;
     private String url;
     private String content;
     private String title;
+    private Instant createdAt;
+    private Instant modifiedAt;
 
-    public News( String url, String content, String title) {
+    public News(String url, String content, String title) {
         this.url = url;
         this.content = content;
         this.title = title;
@@ -42,5 +46,21 @@ public class News {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Instant modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }
